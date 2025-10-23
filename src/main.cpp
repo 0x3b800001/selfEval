@@ -19,6 +19,8 @@
 #include <QPixmap>
 #include <QSplashScreen>
 #include <chrono>
+#include <QPalette>
+#include <QStyleFactory>
 
 #define LEMON_MODULE_NAME "Main"
 
@@ -37,6 +39,160 @@ void initLogger() {
 	spdlog::flush_every(std::chrono::seconds(5));
 }
 
+void ApplyDarkTheme(QApplication& app) {
+  app.setStyle(QStyleFactory::create("Fusion"));
+  
+  QPalette dark_palette;
+  dark_palette.setColor(QPalette::Window, QColor(53, 53, 53));
+  dark_palette.setColor(QPalette::WindowText, Qt::white);
+  dark_palette.setColor(QPalette::Base, QColor(35, 35, 35));
+  dark_palette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
+  dark_palette.setColor(QPalette::ToolTipBase, QColor(25, 25, 25));
+  dark_palette.setColor(QPalette::ToolTipText, Qt::white);
+  dark_palette.setColor(QPalette::Text, Qt::white);
+  dark_palette.setColor(QPalette::Button, QColor(53, 53, 53));
+  dark_palette.setColor(QPalette::ButtonText, Qt::white);
+  dark_palette.setColor(QPalette::BrightText, Qt::red);
+  dark_palette.setColor(QPalette::Link, QColor(42, 130, 218));
+  dark_palette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+  dark_palette.setColor(QPalette::HighlightedText, Qt::black);
+  dark_palette.setColor(QPalette::Disabled, QPalette::WindowText, QColor(120, 120, 120));
+  dark_palette.setColor(QPalette::Disabled, QPalette::Text, QColor(120, 120, 120));
+  dark_palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(120, 120, 120));
+  dark_palette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(80, 80, 80));
+  dark_palette.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(120, 120, 120));
+  dark_palette.setColor(QPalette::Disabled, QPalette::Button, QColor(45, 45, 45));
+  
+  app.setPalette(dark_palette);
+  
+  app.setStyleSheet(R"(
+    QWidget {
+      background-color: #353535;
+      color: #ffffff;
+    }
+    QToolTip {
+      color: #ffffff;
+      background-color: #2a82da;
+      border: 1px solid #555555;
+      padding: 2px;
+    }
+    QPushButton {
+      background-color: #404040;
+      color: #ffffff;
+      border: 1px solid #555555;
+      padding: 6px 12px;
+      border-radius: 3px;
+      min-width: 60px;
+      min-height: 24px;
+      font: normal;
+    }
+    QPushButton:hover {
+      background-color: #505050;
+    }
+    QPushButton:pressed {
+      background-color: #303030;
+    }
+    QPushButton:disabled {
+      color: #888888 !important;
+      background-color: #2d2d2d !important;
+      border: 1px solid #3d3d3d !important;
+      padding: 6px 12px;
+      min-width: 60px;
+      min-height: 24px;
+      font: normal;
+    }
+    QLineEdit, QTextEdit, QPlainTextEdit {
+      background-color: #404040;
+      color: #ffffff;
+      border: 1px solid #555555;
+      padding: 2px 5px;
+      selection-background-color: #2a82da;
+    }
+    QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled {
+      color: #888888 !important;
+      background-color: #2d2d2d !important;
+      border: 1px solid #3d3d3d !important;
+    }
+    QLabel {
+      color: #ffffff;
+      background-color: transparent;
+    }
+    QLabel:disabled {
+      color: #888888 !important;
+      background-color: transparent;
+    }
+    QCheckBox, QRadioButton {
+      color: #ffffff;
+      spacing: 5px;
+    }
+    QCheckBox:disabled, QRadioButton:disabled {
+      color: #888888 !important;
+    }
+    QCheckBox::indicator {
+      width: 13px;
+      height: 13px;
+    }
+    QCheckBox::indicator:unchecked {
+      border: 1px solid #555555;
+      background-color: #404040;
+    }
+    QCheckBox::indicator:unchecked:disabled {
+      border: 1px solid #3d3d3d;
+      background-color: #2d2d2d;
+    }
+    QCheckBox::indicator:checked {
+      border: 1px solid #555555;
+      background-color: #2a82da;
+    }
+    QCheckBox::indicator:checked:disabled {
+      border: 1px solid #3d3d3d;
+      background-color: #1a5276;
+    }
+    QComboBox {
+      background-color: #404040;
+      color: #ffffff;
+      border: 1px solid #555555;
+      padding: 1px 5px;
+      min-width: 75px;
+    }
+    QComboBox:disabled {
+      color: #888888 !important;
+      background-color: #2d2d2d !important;
+      border: 1px solid #3d3d3d !important;
+    }
+    QComboBox::drop-down {
+      border: none;
+      width: 15px;
+    }
+    QComboBox::down-arrow {
+      border: none;
+      image: none;
+      background-color: #555555;
+      width: 10px;
+      height: 10px;
+    }
+    QMenuBar {
+      background-color: #353535;
+      color: #ffffff;
+    }
+    QMenuBar::item:selected {
+      background-color: #505050;
+    }
+    QMenu {
+      background-color: #353535;
+      color: #ffffff;
+      border: 1px solid #555555;
+    }
+    QMenu::item:selected {
+      background-color: #505050;
+    }
+    QMenu::item:disabled {
+      color: #888888 !important;
+      background-color: transparent;
+    }
+  )");
+}
+
 int main(int argc, char *argv[]) {
 
 #ifndef LEMON_QT6
@@ -46,11 +202,13 @@ int main(int argc, char *argv[]) {
 	    Qt::HighDpiScaleFactorRoundingPolicy::PassThrough); // Qt 6 compatibility
 #endif
 
-	QCoreApplication::setApplicationName("Lemonlime");
+	QCoreApplication::setApplicationName("selfEval");
 
 	initLogger();
 
 	Lemon::LemonBaseApplication app(argc, argv);
+  
+  ApplyDarkTheme(app);
 
 	app.Initialize();
 

@@ -22,6 +22,7 @@
 #include "core/contestant.h"
 #include "core/task.h"
 #include "core/testcase.h"
+#include "core/decrypt.h"
 #include "detaildialog.h"
 #include "newcontestdialog.h"
 #include "opencontestdialog.h"
@@ -45,6 +46,8 @@
 
 LemonLime::LemonLime(QWidget *parent) : QMainWindow(parent), ui(new Ui::LemonLime) {
 	ui->setupUi(this);
+  ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->tasksTab));
+  ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->statisticsTab));
 	curContest = nullptr;
 	settings = new Settings();
 	ui->tabWidget->setVisible(false);
@@ -87,14 +90,15 @@ LemonLime::LemonLime(QWidget *parent) : QMainWindow(parent), ui(new Ui::LemonLim
 	connect(ui->closeAction, &QAction::triggered, this, &LemonLime::closeAction);
 	connect(ui->addTasksAction, &QAction::triggered, this, &LemonLime::addTasksAction);
 	connect(ui->exportAction, &QAction::triggered, this, &LemonLime::exportResult);
-	connect(ui->actionExportStatistics, &QAction::triggered, this, &LemonLime::exportStatstics);
+	connect(ui->actionExportStatistics, &QAction::triggered, this, &LemonLime::exportStatistics);
 	connect(ui->aboutAction, &QAction::triggered, this, &LemonLime::aboutLemon);
 	connect(ui->actionManual, &QAction::triggered, this, &LemonLime::actionManual);
 	connect(ui->actionMore, &QAction::triggered, this, &LemonLime::actionMore);
 	connect(ui->actionChangeContestName, &QAction::triggered, this, &LemonLime::changeContestName);
 	connect(ui->exitAction, &QAction::triggered, this, &LemonLime::close);
 
-	QSettings settings("LemonLime", "lemon");
+	QSettings settings("SelfEval", "lemon");
+  settings.clear();
 	QSize _size = settings.value("WindowSize", size()).toSize();
 	resize(_size);
 
@@ -124,7 +128,8 @@ void LemonLime::closeEvent(QCloseEvent * /*event*/) {
 		saveContest(curFile);
 
 	settings->saveSettings();
-	QSettings settings("LemonLime", "lemon");
+	QSettings settings("SelfEval", "lemon");
+  settings.clear(); 
 	settings.setValue("WindowSize", size());
 }
 
@@ -597,6 +602,7 @@ void LemonLime::contestantDeleted() {
 }
 
 void LemonLime::saveContest(const QString &fileName) {
+  return;
 	QFile file(fileName);
 
 	if (! file.open(QFile::WriteOnly)) {
@@ -632,7 +638,15 @@ void LemonLime::loadContest(const QString &filePath) {
 
 	curContest = new Contest(this);
 
-	QFile file(filePath);
+
+  Decrypt D(filePath);
+	if (D.secret()[0] != '/') {
+		QMessageBox::warning(this, tr("Error"), tr("Cannot open file %1").arg(QFileInfo(filePath).fileName()),
+		                     QMessageBox::Close);
+		return;
+	}
+
+	QFile file(D.secret());
 
 	if (! file.open(QFile::ReadOnly)) {
 		QMessageBox::warning(this, tr("Error"), tr("Cannot open file %1").arg(QFileInfo(filePath).fileName()),
@@ -721,7 +735,7 @@ void LemonLime::loadContest(const QString &filePath) {
 	ui->actionChangeContestName->setEnabled(true);
 	ui->cleanupAction->setEnabled(false);
 	ui->refreshAction->setEnabled(false);
-	setWindowTitle(tr("LemonLime - %1").arg(curContest->getContestTitle()));
+	setWindowTitle(tr("selfEval - %1").arg(curContest->getContestTitle()));
 	ui->tabWidget->setCurrentIndex(0);
 	QApplication::restoreOverrideCursor();
 	LOG("Contest -", curContest->getContestTitle(), "loaded successfully");
@@ -739,7 +753,7 @@ void LemonLime::newContest(const QString &title, const QString &savingName, cons
 	curContest = new Contest(this);
 	curContest->setSettings(settings);
 	curContest->setContestTitle(title);
-	setWindowTitle(tr("LemonLime - %1").arg(title));
+	setWindowTitle(tr("selfEval - %1").arg(title));
 	QDir::setCurrent(path);
 	QDir().mkdir(Settings::dataPath());
 	QDir().mkdir(Settings::sourcePath());
@@ -797,7 +811,7 @@ void LemonLime::closeAction() {
 	ui->actionChangeContestName->setEnabled(false);
 	ui->cleanupAction->setEnabled(false);
 	ui->refreshAction->setEnabled(false);
-	setWindowTitle(tr("LemonLime"));
+	setWindowTitle(tr("selfEval"));
 }
 
 void LemonLime::saveAction() { saveContest(curFile); }
@@ -976,7 +990,7 @@ void LemonLime::addTasksAction() {
 
 void LemonLime::exportResult() { ExportUtil::exportResult(this, curContest); }
 
-void LemonLime::exportStatstics() { StatisticsBrowser::exportStatstics(this, curContest); }
+void LemonLime::exportStatistics() { StatisticsBrowser::exportStatistics(this, curContest); }
 
 void LemonLime::changeContestName() {
 	if (! curContest) {
@@ -993,7 +1007,7 @@ void LemonLime::changeContestName() {
 	}
 
 	curContest->setContestTitle(newName);
-	setWindowTitle(tr("LemonLime - %1").arg(curContest->getContestTitle()));
+	setWindowTitle(tr("selfEval - %1").arg(curContest->getContestTitle()));
 	ui->resultViewer->refreshViewer();
 	ui->statisticsBrowser->refresh();
 	saveContest(curFile);

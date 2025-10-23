@@ -11,6 +11,7 @@
 #include "ui_opencontestwidget.h"
 //
 #include "core/contest.h"
+#include "core/decrypt.h"
 //
 #include <QFileDialog>
 #include <QJsonDocument>
@@ -36,7 +37,13 @@ void OpenContestWidget::refreshContestList() {
 	ui->recentContest->setRowCount(0);
 
 	for (int i = 0; i < recentContest.size();) {
-		QFile file(recentContest[i]);
+    Decrypt D(recentContest[i]);
+    if (D.secret()[0] != '/') {
+      recentContest.removeAt(i);
+      continue;
+    }
+
+    QFile file(D.secret());
 
 		if (! file.open(QFile::ReadOnly)) {
 			recentContest.removeAt(i);
@@ -106,7 +113,15 @@ void OpenContestWidget::addContest() {
 		return;
 
 	fileName = fileName.replace('/', QDir::separator());
-	QFile file(fileName);
+  Decrypt D(fileName);
+	if (D.secret()[0] != '/') {
+		QMessageBox::warning(this, tr("Error"), tr("Cannot open file %1").arg(QFileInfo(fileName).fileName()),
+		                     QMessageBox::Close);
+		return;
+	}
+
+	QFile file(D.secret());
+
 
 	if (! file.open(QFile::ReadOnly)) {
 		QMessageBox::warning(this, tr("Error"), tr("Cannot open selected file"), QMessageBox::Close);

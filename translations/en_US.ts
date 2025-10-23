@@ -1763,7 +1763,7 @@ Depends: </source>
         <translation></translation>
     </message>
     <message>
-        <source>LemonLime - %1</source>
+        <source>selfEval - %1</source>
         <translation></translation>
     </message>
     <message>

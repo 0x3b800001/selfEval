@@ -1788,8 +1788,8 @@ Depends: </source>
         <translation>%1 已损坏</translation>
     </message>
     <message>
-        <source>LemonLime - %1</source>
-        <translation>LemonLime - %1</translation>
+        <source>selfEval - %1</source>
+        <translation>selfEval - %1</translation>
     </message>
     <message>
         <source>Cannot make contest path</source>

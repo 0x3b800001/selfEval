@@ -21,6 +21,7 @@ WelcomeDialog::WelcomeDialog(QWidget *parent) : QDialog(parent), ui(new Ui::Welc
 	        &WelcomeDialog::informationChanged);
 	connect(ui->tabWidget, &QTabWidget::currentChanged, this, &WelcomeDialog::tabIndexChanged);
 	connect(ui->openContestWidget, &OpenContestWidget::rowDoubleClicked, this, &WelcomeDialog::accept);
+  ui->tabWidget->removeTab(1);
 }
 
 WelcomeDialog::~WelcomeDialog() { delete ui; }

@@ -62,6 +62,7 @@ else()
 endif()
 
 add_definitions(-DQT_NO_FOREACH)
+add_definitions(-DQT_NO_DEBUG_OUTPUT)
 
 find_package(${LEMON_QT_LIBNAME} ${LEMON_QT_MAJOR_VERSION}.${LEMON_QT_MINOR_VERSION} COMPONENTS Core Gui Widgets REQUIRED)
 list(APPEND LEMON_QT_LIBS ${LEMON_QT_LIBNAME}::Core ${LEMON_QT_LIBNAME}::Gui ${LEMON_QT_LIBNAME}::Widgets)

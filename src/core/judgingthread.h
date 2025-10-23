@@ -81,7 +81,7 @@ class JudgingThread : public QThread {
 	void judgeTraditionalTask();
 	void judgeAnswersOnlyTask();
 	// void judgeInteractionTask();
-
+  void compare(const QString &);
   public slots:
 	void stopJudgingSlot();
 };
