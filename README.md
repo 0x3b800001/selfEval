@@ -1,3 +1,5 @@
+# 这个项目代码质量极差，已被弃用。
+
 ## 简介
 
 基于 [LemonLime](https://github.com/Project-LemonLime/Project_LemonLime) 的仿 NOI 加密自测系统。仅支持 Linux，NOI Linux 2.0 可用。
